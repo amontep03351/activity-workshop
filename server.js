@@ -135,6 +135,14 @@ app.get('/', (req, res) => {
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
+// Handle default route (root URL)
+app.get('/api/welcome-container', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'welcome-container.html'));
+});
+// Handle default route (root URL)
+app.get('/api/userinfo', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'userinfo.html'));
+});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
