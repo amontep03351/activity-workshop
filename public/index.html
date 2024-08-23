@@ -165,6 +165,7 @@ $(document).ready(function(){
                      confirmButtonText: 'OK'
                  });
                  function_user(firstName);
+                 $('#register-modal').fadeOut();
              },
              error: function(xhr) {
                  Swal.fire({
@@ -217,7 +218,7 @@ function function_user(firstName) {
        success: function(Html) {
 
            $('.info-content').html(Html);
-           $("#user_name").html(firstName);
+
        }
    });
 }
