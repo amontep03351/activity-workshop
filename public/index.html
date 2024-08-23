@@ -59,7 +59,7 @@
 $(document).ready(function(){
 
   $.ajax({
-       url: '/api/welcome-container',
+       url: '/welcome-container',
        method: 'GET',
        success: function(Html) {
            $('.info-content').html(Html);
@@ -214,7 +214,7 @@ function function_short(order) {
 }
 function function_user(firstName) {
   $.ajax({
-       url: '/api/userinfo',
+       url: '/userinfo',
        method: 'GET',
        success: function(Html) {
 
@@ -225,7 +225,7 @@ function function_user(firstName) {
 }
 function function_logout() {
   $.ajax({
-       url: '/api/welcome-container',
+       url: '/welcome-container',
        method: 'GET',
        success: function(Html) {
            $('.info-content').html(Html);
