@@ -71,12 +71,45 @@ app.post('/api/register', async (req, res) => {
 
 // List Activities Route
 app.get('/api/activities', async (req, res) => {
-   try {
-       const activities = await Activity.find();
-       res.status(200).json(activities);
-   } catch (err) {
-       res.status(500).json({ message: 'Server error' });
-   }
+    try {
+        const activities = await Activity.find();
+        res.status(200).json(activities);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching activities', error: err.message });
+    }
+});
+app.get('/api/activities/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const activity = await Activity.findById(id);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+        res.status(200).json(activity);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching activity', error: err.message });
+    }
+});
+app.put('/api/activities/:id', async (req, res) => {
+    const { id } = req.params;
+    const { ActivityName, ActivityDes, ActivityRegisted, ActivitySum } = req.body;
+
+    try {
+        const updatedActivity = await Activity.findByIdAndUpdate(
+            id,
+            { ActivityName, ActivityDes , ActivitySum },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedActivity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+
+        res.status(200).json({ message: 'Activity updated successfully', activity: updatedActivity });
+    } catch (err) {
+        res.status(500).json({ message: 'Error updating activity', error: err.message });
+    }
 });
 app.post('/api/activities', async (req, res) => {
     const { ActivityName, ActivityDes, ActivityRegisted, ActivitySum } = req.body;
