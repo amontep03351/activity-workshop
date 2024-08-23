@@ -136,11 +136,11 @@ app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 // Handle default route (root URL)
-app.get('/api/welcome-container', (req, res) => {
+app.get('/welcome-container', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'welcome-container.html'));
 });
 // Handle default route (root URL)
-app.get('/api/userinfo', (req, res) => {
+app.get('/userinfo', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'userinfo.html'));
 });
 
