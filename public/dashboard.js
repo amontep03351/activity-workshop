@@ -36,7 +36,7 @@ $(document).ready(function() {
         const activity = {
             ActivityName: $('#ActivityName').val(),
             ActivityDes: $('#ActivityDes').val(),
-            ActivitySum: $('#ActivitySum').val()
+            ActivitySum: parseInt($('#ActivitySum').val())
         };
 
         if (id) {
