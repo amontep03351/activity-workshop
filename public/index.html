@@ -118,32 +118,7 @@ $(document).ready(function(){
            $('#activities-container').html('<p>Error loading activities. Please try again later.</p>');
        }
    });
-  // Open Login Modal
-    $('#open-login-modal').click(function() {
-        $('#login-modal').fadeIn();
-    });
 
-    // Open Register Modal
-    $('#open-register-modal').click(function() {
-        $('#register-modal').fadeIn();
-    });
-
-    // Close Login Modal
-    $('#close-login-modal').click(function() {
-        $('#login-modal').fadeOut();
-    });
-
-    // Close Register Modal
-    $('#close-register-modal').click(function() {
-        $('#register-modal').fadeOut();
-    });
-
-    // Close Modal when clicking outside the modal content
-    $(window).click(function(event) {
-        if ($(event.target).hasClass('modal')) {
-            $('.modal').fadeOut();
-        }
-    });
     // Handle Registration
     $('#registerForm').on('submit', function(event) {
          event.preventDefault();
