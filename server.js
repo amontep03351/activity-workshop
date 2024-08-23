@@ -79,14 +79,14 @@ app.get('/api/activities', async (req, res) => {
    }
 });
 app.post('/api/activities', async (req, res) => {
-    const { ActivityName, ActivityDes, ActivitySum } = req.body;
+    const { ActivityName, ActivityDes, ActivityRegisted, ActivitySum } = req.body;
 
-    if (!ActivityName || !ActivityDes || typeof ActivitySum !== 'number') {
+    if (!ActivityName || !ActivityDes || typeof ActivityRegisted !== 'number' || typeof ActivitySum !== 'number') {
         return res.status(400).json({ message: 'Invalid input data' });
     }
 
     try {
-        const newActivity = new Activity({ ActivityName, ActivityDes, ActivitySum });
+        const newActivity = new Activity({ ActivityName, ActivityDes, ActivityRegisted, ActivitySum });
         await newActivity.save();
         res.status(201).json({ message: 'Activity added successfully', activity: newActivity });
     } catch (err) {
