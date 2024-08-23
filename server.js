@@ -5,7 +5,7 @@ const app = express();
 
 // เชื่อมต่อกับ MongoDB
 mongoose.connect('mongodb+srv://localthaistores:Pd83fQnU1p8jItX6@cluster0.sr1js.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
-   
+
     serverSelectionTimeoutMS: 50000 // เพิ่มเวลาในการรอการเชื่อมต่อ
 })
 .then(() => console.log('Connected to MongoDB Atlas'))
@@ -31,10 +31,10 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 const activitySchema = new mongoose.Schema({
-    name: String,
-    description: String,
-    date: Date,
-    spotsAvailable: Number
+    ActivityName: { type: String, required: true },
+    ActivityDes: { type: String, required: true },
+    ActivityRegisted: { type: Number, required: true },
+    ActivitySum: { type: Number, required: true }
 });
 const Activity = mongoose.model('Activity', activitySchema);
 
