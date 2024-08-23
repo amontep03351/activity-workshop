@@ -19,47 +19,7 @@
         <div class="info-card">
             <img src="Activity.png" alt="Image">
             <div class="info-content">
-              <div class="welcome-container">
-                   <h1>ยินดีต้อนรับสู่ Activity!</h1>
-                   <p>
-                       ที่นี่คุณจะได้พบกับกิจกรรมน่าสนใจมากมายให้คุณเข้าร่วม ไม่ว่าจะเป็นกิจกรรมผจญภัย งานสร้างสรรค์ หรือการเรียนรู้ เรามีครบทุกสิ่งที่คุณต้องการ
-                   </p>
-                   <p>
-                       เพื่อให้คุณได้สัมผัสประสบการณ์ที่ดีที่สุด กรุณากรอกข้อมูลเบื้องต้นของคุณด้านล่าง แล้วคุณจะสามารถเลือกและเข้าร่วมกิจกรรมที่สนใจได้ทันที
-                   </p>
 
-
-
-                   <!-- Register Modal -->
-                   <div id="register-modal" class="modal">
-                       <div class="modal-content">
-                           <span class="close" id="close-register-modal">&times;</span>
-                           <h2>ลงชื่อเข้าใช้</h2>
-                           <form   id="registerForm">
-                              <div class="form-group">
-                                  <label for="first-name">ชื่อ</label>
-                                  <input type="text" id="first-name" name="first-name" required>
-                              </div>
-                              <div class="form-group">
-                                  <label for="last-name">นามสกุล</label>
-                                  <input type="text" id="last-name" name="last-name" required>
-                              </div>
-                              <div class="form-group">
-                                  <label for="phone">เบอร์โทร</label>
-                                  <input type="tel" id="phone" name="phone" required>
-                              </div>
-
-                              <button type="submit" class="btn">ลงทะเบียน</button>
-                          </form>
-                       </div>
-                   </div>
-               </div>
-
-               <div class="button-container">
-                 <div class="item">
-                   <button class="register-button" id="open-register-modal">ลงชื่อเข้าใช้</button>
-                 </div>
-               </div>
             </div>
         </div>
 
@@ -84,7 +44,7 @@
              <ul id="activity-list" class="activity-list">
 
 
-                  
+
 
                  <!-- Add more activities as needed -->
              </ul>
@@ -97,6 +57,14 @@
 <script>
 
 $(document).ready(function(){
+
+  $.ajax({
+       url: '/api/welcome-container',
+       method: 'GET',
+       success: function(Html) {
+           $('.info-content').html(Html);
+       }
+   });
   $.ajax({
        url: '/api/activities',
        method: 'GET',
@@ -198,6 +166,7 @@ $(document).ready(function(){
                      text: 'คุณได้ลงทะเบียนสำเร็จแล้ว!',
                      confirmButtonText: 'OK'
                  });
+                 function_user(firstName);
              },
              error: function(xhr) {
                  Swal.fire({
@@ -242,6 +211,26 @@ function function_short(order) {
   $.each($items, function(index, item) {
       $list.append(item);
   });
+}
+function function_user(firstName) {
+  $.ajax({
+       url: '/api/userinfo',
+       method: 'GET',
+       success: function(Html) {
+
+           $('.info-content').html(Html);
+           $("#user_name").html(firstName);
+       }
+   });
+}
+function function_logout() {
+  $.ajax({
+       url: '/api/welcome-container',
+       method: 'GET',
+       success: function(Html) {
+           $('.info-content').html(Html);
+       }
+   });
 }
 </script>
 
