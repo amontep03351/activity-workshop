@@ -137,7 +137,7 @@ app.get('/dashboard', (req, res) => {
 });
 // Handle default route (root URL)
 app.get('/welcome-container', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'welcome-container.html'));
+    res.sendFile(path.join(__dirname, 'public', 'welcome_container.html'));
 });
 // Handle default route (root URL)
 app.get('/userinfo', (req, res) => {
