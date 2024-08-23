@@ -78,10 +78,29 @@ app.get('/api/activities', async (req, res) => {
        res.status(500).json({ message: 'Server error' });
    }
 });
+app.post('/api/activities', async (req, res) => {
+    const { ActivityName, ActivityDes, ActivitySum } = req.body;
 
+    if (!ActivityName || !ActivityDes || typeof ActivitySum !== 'number') {
+        return res.status(400).json({ message: 'Invalid input data' });
+    }
+
+    try {
+        const newActivity = new Activity({ ActivityName, ActivityDes, ActivitySum });
+        await newActivity.save();
+        res.status(201).json({ message: 'Activity added successfully', activity: newActivity });
+    } catch (err) {
+        res.status(500).json({ message: 'Error adding activity', error: err.message });
+    }
+});
 // Handle default route (root URL)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Handle default route (root URL)
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
 // Start the server
