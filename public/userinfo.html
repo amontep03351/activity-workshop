@@ -7,21 +7,25 @@
       box-sizing: border-box;
   }
   .duseri-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #f8f9fa;
-      padding: 10px;
-      border-bottom: 1px solid #dee2e6;
-      flex: 0 0 auto;
+
+    position: relative;
+    top: -20px; /* Moves the header up relative to its normal position */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-bottom: 1px solid #dee2e6;
+    z-index: 1; /* Ensures header is on top */
   }
   .duseri-header .left {
       font-weight: bold;
       color: black;
+      align-items: left;
   }
   .duseri-header .right {
       display: flex;
-      align-items: center;
+      align-items: right;
   }
   .duseri-header .right i {
       font-size: 1.5em;
@@ -47,5 +51,3 @@
       </div>
   </div>
 </div>
-
- 
