@@ -1,7 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const path = require('path');
 const app = express();
 
@@ -40,8 +38,7 @@ app.get('/api/test', async (req, res) => {
 const userSchema = new mongoose.Schema({
     firstName: String,
     lastName: String,
-    phone: { type: String, unique: true },
-    password: String,
+    phone: { type: String, unique: true }
 });
 
 const User = mongoose.model('User', userSchema);
@@ -61,14 +58,14 @@ const Activity = mongoose.model('Activity', activitySchema);
 
 // Register Route
 app.post('/api/register', async (req, res) => {
-    const { firstName, lastName, phone, password } = req.body;
+    const { firstName, lastName, phone } = req.body;
     try {
         const existingUser = await User.findOne({ phone });
         if (existingUser) {
             return res.status(400).json({ message: 'Phone number already in use' });
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ firstName, lastName, phone, password: hashedPassword });
+
+        const newUser = new User({ firstName, lastName, phone });
         await newUser.save();
         res.status(201).json({ message: 'Registration successful' });
     } catch (err) {
