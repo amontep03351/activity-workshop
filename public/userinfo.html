@@ -1,12 +1,51 @@
+<style>
+  .duseri-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+  }
+  .duseri-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-bottom: 1px solid #dee2e6;
+      flex: 0 0 auto;
+  }
+  .duseri-header .left {
+      font-weight: bold;
+      color: black;
+  }
+  .duseri-header .right {
+      display: flex;
+      align-items: center;
+  }
+  .duseri-header .right i {
+      font-size: 1.5em;
+      cursor: pointer;
+  }
+  .duseri-body {
+      background-color: #ffffff;
+      padding: 10px;
+      flex: 1 1 auto;
+      overflow-y: auto;
+  }
+</style>
 <div class="welcome-container">
-     <h1>ยินดีต้อนรับคุณ</h1><h3 id="user_name"> </h3> 
+  <div class="duseri-container">
+      <div class="duseri-header">
+          <div class="left">Hi, User</div>
+          <div class="right">
+              <i class="fas fa-sign-out-alt" title="Logout" onclick="function_logout();"></i>
+          </div>
+      </div>
+      <div class="duseri-body">
+          Body Content
+      </div>
+  </div>
+</div>
 
-
-
- </div>
-
- <div class="button-container">
-   <div class="item">
-     <button class="register-button" onclick="function_logout();">ลงชื่อออก</button>
-   </div>
- </div>
+ 
