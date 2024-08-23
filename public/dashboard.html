@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="dashboard.css"> <!-- ลิงก์ไปยังไฟล์ CSS ของคุณ -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+
+    <div class="container">
+        <button id="addActivityBtn">Add New Activity</button>
+
+        <table id="activitiesTable" class="display">
+            <thead>
+                <tr>
+                    <th>Activity Name</th>
+                    <th>Description</th>
+                    <th>Registered</th>
+                    <th>Total Spots</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be populated by DataTables -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add/Edit Activity Modal -->
+    <div id="activityModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">Add Activity</h2>
+            <form id="activityForm">
+                <input type="hidden" id="activityId">
+                <div class="form-group">
+                    <label for="ActivityName">Activity Name</label>
+                    <input type="text" id="ActivityName" name="ActivityName" required>
+                </div>
+                <div class="form-group">
+                    <label for="ActivityDes">Description</label>
+                    <input type="text" id="ActivityDes" name="ActivityDes" required>
+                </div>
+                <div class="form-group">
+                    <label for="ActivitySum">Total Spots</label>
+                    <input type="number" id="ActivitySum" name="ActivitySum" required>
+                </div>
+                <button type="submit" id="saveActivityBtn">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script> <!-- ลิงก์ไปยังไฟล์ JavaScript ของคุณ -->
+</body>
+</html>
