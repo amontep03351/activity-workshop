@@ -161,7 +161,7 @@ $(document).ready(function(){
                  <p>ผู้เข้าร่วมทั้งหมด: ${data.TotalParticipants}</p>
                   <div class="button-container" >
                     <div class="item">
-                     <button onclick="function_open_Participants_modal(${data._id});"  class="register-button"  >ดูผู้เข้าร่วม</button>
+                     <button onclick="function_open_Participants_modal('${data._id}');"  class="register-button"  >ดูผู้เข้าร่วม</button>
                     </div>
                     <div class="item">
                       <button onclick="function_open_register_modal();"  class="register-button" data-id="${data._id}" id="open-register-modal">เข้าร่วม</button>
