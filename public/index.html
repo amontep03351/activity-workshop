@@ -76,6 +76,32 @@
            </form>
         </div>
     </div>
+
+    <!-- Participants  -->
+    <div id="Participants-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-Participants-modal">&times;</span>
+            <h2>รายชื่อผู้เข้าร่วม</h2>
+            <table id="participants-table">
+              <thead>
+                  <tr>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Phone</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <!-- รายชื่อผู้เข้าร่วมจะถูกเพิ่มที่นี่ -->
+                  <!-- ตัวอย่างข้อมูล -->
+                  <tr>
+                      <td data-label="First Name">John</td>
+                      <td data-label="Last Name">Doe</td>
+                      <td data-label="Phone">1234567890</td>
+                  </tr>
+              </tbody>
+          </table>
+        </div>
+    </div>
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -134,6 +160,9 @@ $(document).ready(function(){
                  <p>${data.ActivityDescription}</p>
                  <p>ผู้เข้าร่วมทั้งหมด: ${data.TotalParticipants}</p>
                   <div class="button-container" >
+                    <div class="item">
+                     <button onclick="function_open_Participants_modal(${data._id});"  class="register-button"  >ดูผู้เข้าร่วม</button>
+                    </div>
                     <div class="item">
                       <button onclick="function_open_register_modal();"  class="register-button" data-id="${data._id}" id="open-register-modal">เข้าร่วม</button>
                     </div>
@@ -222,24 +251,7 @@ $(document).ready(function(){
         });
     });
 
-    // ดูรายชื่อผู้เข้าร่วมกิจกรรม
-    $('#viewParticipants').click(function() {
-        const activityId = $('#participantActivityId').val();
-        $.ajax({
-            url: `/activities/${activityId}/participants`,
-            method: 'GET',
-            success: function(data) {
-                let participantsList = $('#participantsList');
-                participantsList.empty(); // ลบรายการเก่า
-                data.forEach(function(participant) {
-                    participantsList.append('<li>' + participant.FirstName + ' ' + participant.LastName + ': ' + participant.PhoneNumber + '</li>');
-                });
-            },
-            error: function(err) {
-                console.error('Error fetching participants:', err);
-            }
-        });
-    });
+
 
 
 
@@ -273,7 +285,10 @@ $(document).ready(function(){
       $('#close-register-modal').click(function() {
           $('#register-modal').fadeOut();
       });
-
+      // Close Participants Modal
+      $('#close-Participants-modal').click(function() {
+          $('#Participants-modal').fadeOut();
+      });
       // Close Modal when clicking outside the modal content
       $(window).click(function(event) {
           if ($(event.target).hasClass('modal')) {
@@ -303,6 +318,26 @@ function function_short(order) {
 }
 function function_open_register_modal() {
   $('#register-modal').fadeIn();
+}
+function function_open_Participants_modal(id) {
+  const activityId = id;
+  $.get(`/activities/${activityId}/participants`, function(participants) {
+     let participantsHtml = '';
+     participants.forEach(participant => {
+         participantsHtml += `
+             <tr>
+                 <td data-label="First Name">${participant.firstName}</td>
+                 <td data-label="Last Name">${participant.lastName}</td>
+                 <td data-label="Phone">${participant.phone}</td>
+             </tr>
+         `;
+     });
+     $('#participants-table tbody').html(participantsHtml);
+     $('#participants-list').show(); // แสดงตารางผู้เข้าร่วม
+  }).fail(function() {
+     $('#participants-list').html('<p>ไม่สามารถดึงข้อมูลผู้เข้าร่วมได้</p>');
+  });
+
 }
 </script>
 
