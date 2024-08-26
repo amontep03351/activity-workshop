@@ -17,35 +17,35 @@ mongoose.connect('mongodb+srv://localthaistores:Pd83fQnU1p8jItX6@cluster0.sr1js.
 
 
 // สร้าง Schema
-const activitySchema = new mongoose.Schema({
-   ActivityName: { type: String, required: true },
-   ActivityDescription: { type: String },
-   TotalParticipants: { type: Number, default: 0 },
-   Participants: [
-       {
-           ParticipantId: { type: mongoose.Schema.Types.ObjectId, ref: 'Participant' },
-           JoinedAt: { type: Date, default: Date.now }
-       }
-   ]
+const dataActivitySchema = new mongoose.Schema({
+    ActivityName: { type: String, required: true },
+    ActivityDescription: { type: String },
+    TotalParticipants: { type: Number, default: 0 },
+    Participants: [
+        {
+            ParticipantId: { type: mongoose.Schema.Types.ObjectId, ref: 'DataParticipant' },
+            JoinedAt: { type: Date, default: Date.now }
+        }
+    ]
 });
 
-const participantSchema = new mongoose.Schema({
-    ActivityId: { type: mongoose.Schema.Types.ObjectId, ref: 'Activity', required: true },
+const dataParticipantSchema = new mongoose.Schema({
+    ActivityId: { type: mongoose.Schema.Types.ObjectId, ref: 'DataActivity', required: true },
     FirstName: { type: String, required: true },
     LastName: { type: String, required: true },
     PhoneNumber: { type: String, required: true },
     JoinedAt: { type: Date, default: Date.now }
 });
 
-const Activity = mongoose.model('Activity', activitySchema);
-const Participant = mongoose.model('Participant', participantSchema);
+const DataActivity = mongoose.model('DataActivity', dataActivitySchema);
+const DataParticipant = mongoose.model('DataParticipant', dataParticipantSchema);
 
 
 
 // API 1: ดึงกิจกรรมทั้งหมด
 app.get('/activities', async (req, res) => {
     try {
-        const activities = await Activity.find();
+        const activities = await DataActivity.find();
         res.json(activities);
     } catch (error) {
         res.status(500).send('Server error');
@@ -55,7 +55,7 @@ app.get('/activities', async (req, res) => {
 // API 2: ดึงรายละเอียดกิจกรรมแต่ละรายการ
 app.get('/activities/:id', async (req, res) => {
     try {
-        const activity = await Activity.findById(req.params.id);
+        const activity = await DataActivity.findById(req.params.id);
         if (!activity) return res.status(404).send('Activity not found');
         res.json(activity);
     } catch (error) {
@@ -65,7 +65,7 @@ app.get('/activities/:id', async (req, res) => {
 // API 3: ดูรายชื่อผู้เข้าร่วมกิจกรรม
 app.get('/activities/:id/participants', async (req, res) => {
     try {
-        const activity = await Activity.findById(req.params.id).populate('Participants.ParticipantId', 'FirstName LastName PhoneNumber');
+        const activity = await DataActivity.findById(req.params.id).populate('Participants.ParticipantId', 'FirstName LastName PhoneNumber');
         if (!activity) return res.status(404).send('Activity not found');
 
         const participants = activity.Participants.map(participant => ({
@@ -80,7 +80,6 @@ app.get('/activities/:id/participants', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-
 // API 4: เช็คว่าผู้เข้าร่วมกิจกรรมได้ลงทะเบียนแล้วหรือยัง
 app.post('/activities/:id/check', async (req, res) => {
     try {
@@ -88,7 +87,7 @@ app.post('/activities/:id/check', async (req, res) => {
         const activityId = req.params.id;
 
         // ตรวจสอบว่าผู้ใช้คนนี้เข้าร่วมกิจกรรมนี้แล้วหรือยัง
-        const existingParticipant = await Participant.findOne({
+        const existingParticipant = await DataParticipant.findOne({
             ActivityId: activityId,
             FirstName: FirstName,
             LastName: LastName,
@@ -105,14 +104,15 @@ app.post('/activities/:id/check', async (req, res) => {
     }
 });
 
+
 // API 5: เพิ่มผู้เข้าร่วมกิจกรรม
 app.post('/activities/:id/join', async (req, res) => {
     try {
         const { FirstName, LastName, PhoneNumber } = req.body;
-        const activity = await Activity.findById(req.params.id);
+        const activity = await DataActivity.findById(req.params.id);
         if (!activity) return res.status(404).send('Activity not found');
 
-        const participant = new Participant({
+        const participant = new DataParticipant({
             ActivityId: req.params.id,
             FirstName,
             LastName,
@@ -130,7 +130,6 @@ app.post('/activities/:id/join', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-
 
 
 // เปิดหน้า index.html
