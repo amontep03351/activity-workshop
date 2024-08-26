@@ -136,10 +136,9 @@ app.post('/activities/:id/join', async (req, res) => {
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
-
-
+ 
 app.get('/welcome-container', (req, res) => {
-    res.sendFile(path.join(__dirname, 'welcome_container.html'));
+    res.sendFile(path.join(__dirname, 'public', 'welcome_container.html'));
 });
 
 // เริ่มเซิร์ฟเวอร์
