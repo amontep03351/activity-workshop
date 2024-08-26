@@ -320,6 +320,7 @@ function function_open_register_modal() {
   $('#register-modal').fadeIn();
 }
 function function_open_Participants_modal(id) {
+  $('#Participants-modal').fadeIn();
   const activityId = id;
   $.get(`/activities/${activityId}/participants`, function(participants) {
      let participantsHtml = '';
