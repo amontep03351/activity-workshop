@@ -158,7 +158,11 @@ $(document).ready(function(){
                  <h2>${data.ActivityName}</h2>
                  <p>${data.ActivityDescription}</p>
                  <p>Total Participants: ${data.TotalParticipants}</p>
-                 <button class="register-button" id="open-register-modal" data-id="${data._id}">เข้าร่วม</button>
+                  <div class="button-container" >
+                    <div class="item">
+                      <button  id="button-join" class="register-button" data-id="${data._id}" id="open-register-modal">เข้าร่วม</button>
+                    </div>
+                  </div>
             `;
             $('.info-content').html(detailsHtml);
         }).fail(function() {
