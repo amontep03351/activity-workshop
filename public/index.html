@@ -56,7 +56,7 @@
     <div id="register-modal" class="modal">
         <div class="modal-content">
             <span class="close" id="close-register-modal">&times;</span>
-            <h2>ลงชื่อเข้าใช้</h2>
+            <h2>ลงชื่อเข้าร่วม</h2>
             <form   id="registerForm">
                <div class="form-group">
                    <label for="first-name">ชื่อ</label>
@@ -81,102 +81,202 @@
 
 $(document).ready(function(){
 
-  $.ajax({
-       url: '/welcome-container',
-       method: 'GET',
-       success: function(Html) {
-           $('.info-content').html(Html);
-       }
-   });
-  $.ajax({
-       url: '/api/activities',
-       method: 'GET',
-       success: function(data) {
-           // รับข้อมูลจาก API
-           const activities = data;
-           let activitiesHtml = '';
+    $.ajax({
+         url: '/welcome-container',
+         method: 'GET',
+         success: function(Html) {
+             $('.info-content').html(Html);
+         }
+    });
 
-           // ลูปผ่านข้อมูลและสร้าง HTML
-           activities.forEach(activity => {
-               activitiesHtml += `
-                   <li data-name="${activity.ActivityName}">
-                       <div class="activity-info">
-                           <h3>${activity.ActivityName}</h3>
-                           <p class="details">${activity.ActivityDes}</p>
-                           <p class="seats-info">Total Seats: ${activity.ActivityRegisted} | Available Seats: ${activity.ActivitySum}</p>
-                           <button class="view-btn">View</button>
-                       </div>
-                   </li>
-               `;
-           });
+    // ดึงกิจกรรมทั้งหมด
+    $.ajax({
+        url: '/activities',
+        method: 'GET',
+        success: function(data) {
+            // รับข้อมูลจาก API
+            const activities = data;
+            let activitiesHtml = '';
 
-           // แสดงข้อมูลในหน้าเว็บ
-           $('#activity-list').html(activitiesHtml);
-       },
-       error: function(xhr, status, error) {
-           console.error('Error fetching activities:', status, error);
-           $('#activities-container').html('<p>Error loading activities. Please try again later.</p>');
-       }
-   });
+            // ลูปผ่านข้อมูลและสร้าง HTML
+            activities.forEach(activity => {
+                activitiesHtml += `
+                    <li data-name="${activity.ActivityName}">
+                        <div class="activity-info">
+                            <h3>${activity.ActivityName}</h3>
+                            <p class="details">${activity.ActivityDes}</p>
+                            <p class="seats-info">Total Seats: ${activity.ActivityRegisted} | Available Seats: ${activity.ActivitySum}</p>
+                            <button class="view-btn">View</button>
+                        </div>
+                    </li>
+                `;
+            });
+
+            // แสดงข้อมูลในหน้าเว็บ
+            $('#activity-list').html(activitiesHtml);
+        },
+        error: function(err) {
+            console.error('Error fetching activities:', err);
+        }
+    });
+
+    // ฟอร์มสำหรับการเข้าร่วมกิจกรรม
+    $('#joinActivityForm').submit(function(e) {
+        e.preventDefault();
+
+        const activityId = $('#activityId').val();
+        const firstName = $('#firstName').val();
+        const lastName = $('#lastName').val();
+        const phoneNumber = $('#phoneNumber').val();
+
+        // เช็คว่าผู้เข้าร่วมได้ลงทะเบียนแล้วหรือยัง
+        $.ajax({
+            url: `/activities/${activityId}/check`,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                FirstName: firstName,
+                LastName: lastName,
+                PhoneNumber: phoneNumber
+            }),
+            success: function(response) {
+                alert('Already registered for this activity');
+            },
+            error: function(err) {
+                if (err.status === 404) {
+                    // ถ้ายังไม่ลงทะเบียนให้ดำเนินการลงทะเบียน
+                    $.ajax({
+                        url: `/activities/${activityId}/join`,
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            FirstName: firstName,
+                            LastName: lastName,
+                            PhoneNumber: phoneNumber
+                        }),
+                        success: function(response) {
+                            alert('Joined successfully!');
+                        },
+                        error: function(err) {
+                            console.error('Error joining activity:', err);
+                        }
+                    });
+                } else {
+                    console.error('Error checking participant:', err);
+                }
+            }
+        });
+    });
+
+    // ดูรายชื่อผู้เข้าร่วมกิจกรรม
+    $('#viewParticipants').click(function() {
+        const activityId = $('#participantActivityId').val();
+        $.ajax({
+            url: `/activities/${activityId}/participants`,
+            method: 'GET',
+            success: function(data) {
+                let participantsList = $('#participantsList');
+                participantsList.empty(); // ลบรายการเก่า
+                data.forEach(function(participant) {
+                    participantsList.append('<li>' + participant.FirstName + ' ' + participant.LastName + ': ' + participant.PhoneNumber + '</li>');
+                });
+            },
+            error: function(err) {
+                console.error('Error fetching participants:', err);
+            }
+        });
+    });
+
+
+  // $.ajax({
+  //      url: '/api/activities',
+  //      method: 'GET',
+  //      success: function(data) {
+  //          // รับข้อมูลจาก API
+  //          const activities = data;
+  //          let activitiesHtml = '';
+  //
+  //          // ลูปผ่านข้อมูลและสร้าง HTML
+  //          activities.forEach(activity => {
+  //              activitiesHtml += `
+  //                  <li data-name="${activity.ActivityName}">
+  //                      <div class="activity-info">
+  //                          <h3>${activity.ActivityName}</h3>
+  //                          <p class="details">${activity.ActivityDes}</p>
+  //                          <p class="seats-info">Total Seats: ${activity.ActivityRegisted} | Available Seats: ${activity.ActivitySum}</p>
+  //                          <button class="view-btn">View</button>
+  //                      </div>
+  //                  </li>
+  //              `;
+  //          });
+  //
+  //          // แสดงข้อมูลในหน้าเว็บ
+  //          $('#activity-list').html(activitiesHtml);
+  //      },
+  //      error: function(xhr, status, error) {
+  //          console.error('Error fetching activities:', status, error);
+  //          $('#activities-container').html('<p>Error loading activities. Please try again later.</p>');
+  //      }
+  //  });
 
     // Handle Registration
-    $('#registerForm').on('submit', function(event) {
-         event.preventDefault();
-         const firstName = $('#first-name').val();
-         const lastName = $('#last-name').val();
-         const phone = $('#phone').val();
-
-         // Basic validation for registration
-         if (!firstName || !lastName || !phone) {
-           Swal.fire({
-                 icon: 'warning',
-                 title: 'Validation Error',
-                 text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
-                 confirmButtonText: 'OK'
-             });
-             return;
-         }
-
-         // Validate phone number format (exactly 10 digits)
-         const phoneRegex = /^[0-9]{10}$/;
-         if (!phoneRegex.test(phone)) {
-
-             Swal.fire({
-                   icon: 'warning',
-                   title: 'Invalid Phone Number',
-                   text: 'โปรดป้อนหมายเลขโทรศัพท์ที่ถูกต้องซึ่งมี 10 หลักพอดี.',
-                   confirmButtonText: 'OK'
-               });
-               return;
-         }
-
-         // Optionally, you can add more validation for password strength here
-
-         $.ajax({
-             url: '/api/register',
-             method: 'POST',
-             contentType: 'application/json',
-             data: JSON.stringify({ firstName: firstName, lastName: lastName, phone: phone}),
-             success: function(response) {
-               Swal.fire({
-                     icon: 'success',
-                     title: 'การลงทะเบียนสำเร็จ',
-                     text: 'คุณได้ลงทะเบียนสำเร็จแล้ว!',
-                     confirmButtonText: 'OK'
-                 });
-                 function_user(firstName);
-                 $('#register-modal').fadeOut();
-             },
-             error: function(xhr) {
-                 Swal.fire({
-                       icon: 'error',
-                       title: 'Registration Failed',
-                       text: xhr.responseJSON.message || 'Registration failed',
-                       confirmButtonText: 'OK'
-                   });
-             }
-         });
-     });
+    // $('#registerForm').on('submit', function(event) {
+    //      event.preventDefault();
+    //      const firstName = $('#first-name').val();
+    //      const lastName = $('#last-name').val();
+    //      const phone = $('#phone').val();
+    //
+    //      // Basic validation for registration
+    //      if (!firstName || !lastName || !phone) {
+    //        Swal.fire({
+    //              icon: 'warning',
+    //              title: 'Validation Error',
+    //              text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
+    //              confirmButtonText: 'OK'
+    //          });
+    //          return;
+    //      }
+    //
+    //      // Validate phone number format (exactly 10 digits)
+    //      const phoneRegex = /^[0-9]{10}$/;
+    //      if (!phoneRegex.test(phone)) {
+    //
+    //          Swal.fire({
+    //                icon: 'warning',
+    //                title: 'Invalid Phone Number',
+    //                text: 'โปรดป้อนหมายเลขโทรศัพท์ที่ถูกต้องซึ่งมี 10 หลักพอดี.',
+    //                confirmButtonText: 'OK'
+    //            });
+    //            return;
+    //      }
+    //
+    //      // Optionally, you can add more validation for password strength here
+    //
+    //      $.ajax({
+    //          url: '/api/register',
+    //          method: 'POST',
+    //          contentType: 'application/json',
+    //          data: JSON.stringify({ firstName: firstName, lastName: lastName, phone: phone}),
+    //          success: function(response) {
+    //            Swal.fire({
+    //                  icon: 'success',
+    //                  title: 'การลงทะเบียนสำเร็จ',
+    //                  text: 'คุณได้ลงทะเบียนสำเร็จแล้ว!',
+    //                  confirmButtonText: 'OK'
+    //              });
+    //              function_user(firstName);
+    //              $('#register-modal').fadeOut();
+    //          },
+    //          error: function(xhr) {
+    //              Swal.fire({
+    //                    icon: 'error',
+    //                    title: 'Registration Failed',
+    //                    text: xhr.responseJSON.message || 'Registration failed',
+    //                    confirmButtonText: 'OK'
+    //                });
+    //          }
+    //      });
+    //  });
 
     $('#search-button').on('click', function() {
        const searchTerm = $('#search').val().toLowerCase();
