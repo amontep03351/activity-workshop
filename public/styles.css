@@ -487,6 +487,22 @@ legend {
 .btn:hover {
     background-color: #fec6dc;
 }
+/* ตาราง styles */
+#participants-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+#participants-table th, #participants-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#participants-table th {
+    background-color: #f2f2f2;
+}
 /* Tablet and PC layout */
 @media (min-width: 768px) {
     .container {
@@ -624,5 +640,44 @@ legend {
      }
      .modal-content {
           width: 80%;
+      }
+      #participants-table {
+          font-size: 14px; /* ขนาดตัวอักษรเล็กลงบนมือถือ */
+      }
+
+      #participants-table th, #participants-table td {
+          padding: 6px; /* ลด padding บนมือถือ */
+      }
+
+      /* แปลงตารางเป็นรูปแบบของคอลัมน์สำหรับมือถือ */
+      #participants-table, #participants-table thead, #participants-table tbody, #participants-table tr, #participants-table td, #participants-table th {
+          display: block;
+      }
+
+      #participants-table tr {
+          margin-bottom: 10px; /* เพิ่มระยะห่างระหว่างแถว */
+      }
+
+      #participants-table td {
+          text-align: right;
+          position: relative;
+          padding-left: 50%;
+          white-space: nowrap; /* ป้องกันการตัดข้อความ */
+      }
+
+      #participants-table td::before {
+          content: attr(data-label);
+          position: absolute;
+          left: 0;
+          width: 45%;
+          padding-left: 10px;
+          font-weight: bold;
+          text-align: left;
+          white-space: nowrap;
+      }
+
+      /* ซ่อน headers บนมือถือ */
+      #participants-table thead {
+          display: none;
       }
 }
