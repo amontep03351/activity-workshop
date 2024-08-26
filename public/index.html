@@ -154,13 +154,13 @@ $(document).ready(function(){
             // แสดงรายละเอียดกิจกรรมใน div ที่กำหนด
 
             $('#activityId').val(activityId);
-            const detailsHtml = `
+                const detailsHtml = `
                  <h2>${data.ActivityName}</h2>
                  <p>${data.ActivityDescription}</p>
-                 <p>Total Participants: ${data.TotalParticipants}</p>
+                 <p>ผู้เข้าร่วมทั้งหมด: ${data.TotalParticipants}</p>
                   <div class="button-container" >
                     <div class="item">
-                      <button  id="button-join" class="register-button" data-id="${data._id}" id="open-register-modal">เข้าร่วม</button>
+                      <button  class="register-button" data-id="${data._id}" id="open-register-modal">เข้าร่วม</button>
                     </div>
                   </div>
             `;
