@@ -129,7 +129,7 @@ $(document).ready(function(){
             // แสดงรายละเอียดกิจกรรมใน div ที่กำหนด
 
             $('#activityId').val(activityId);
-            const detailsHtml = `
+            const detailsHtml = `<div class="welcome-container">
                  <h2>${data.ActivityName}</h2>
                  <p>${data.ActivityDescription}</p>
                  <p>ผู้เข้าร่วมทั้งหมด: ${data.TotalParticipants}</p>
@@ -137,7 +137,7 @@ $(document).ready(function(){
                     <div class="item">
                       <button onclick="function_open_register_modal();"  class="register-button" data-id="${data._id}" id="open-register-modal">เข้าร่วม</button>
                     </div>
-                  </div>
+                  </div></div>
             `;
             $('.info-content').html(detailsHtml);
         }).fail(function() {
