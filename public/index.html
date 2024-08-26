@@ -135,7 +135,7 @@ $(document).ready(function(){
                  <p>ผู้เข้าร่วมทั้งหมด: ${data.TotalParticipants}</p>
                   <div class="button-container" >
                     <div class="item">
-                      <button  class="register-button" data-id="${data._id}" id="open-register-modal">เข้าร่วม</button>
+                      <button onclick="function_open_register_modal();"  class="register-button" data-id="${data._id}" id="open-register-modal">เข้าร่วม</button>
                     </div>
                   </div>
             `;
@@ -301,7 +301,9 @@ function function_short(order) {
       $list.append(item);
   });
 }
-
+function function_open_register_modal() {
+  $('#register-modal').fadeIn();
+}
 </script>
 
 </html>
