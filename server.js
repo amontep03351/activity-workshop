@@ -1,7 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+
 const app = express();
+app.use(express.json());
+app.use(express.static('public'));
+
 
 // เชื่อมต่อกับ MongoDB
 mongoose.connect('mongodb+srv://localthaistores:Pd83fQnU1p8jItX6@cluster0.sr1js.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
@@ -11,139 +15,136 @@ mongoose.connect('mongodb+srv://localthaistores:Pd83fQnU1p8jItX6@cluster0.sr1js.
 .then(() => console.log('Connected to MongoDB Atlas'))
 .catch(err => console.error('Error connecting to MongoDB Atlas:', err.message));
 
-// Middleware to parse JSON bodies
-app.use(express.json());
 
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Define schemas and models
-const testSchema = new mongoose.Schema({
-    message: String
-});
-const TestModel = mongoose.model('Test', testSchema);
-
-const userSchema = new mongoose.Schema({
-    firstName: String,
-    lastName: String,
-    phone: { type: String, unique: true }
-});
-const User = mongoose.model('User', userSchema);
-
+// สร้าง Schema
 const activitySchema = new mongoose.Schema({
-    ActivityName: { type: String, required: true },
-    ActivityDes: { type: String, required: true },
-    ActivityRegisted: { type: Number, required: true },
-    ActivitySum: { type: Number, required: true }
+   ActivityName: { type: String, required: true },
+   ActivityDescription: { type: String },
+   TotalParticipants: { type: Number, default: 0 },
+   Participants: [
+       {
+           ParticipantId: { type: mongoose.Schema.Types.ObjectId, ref: 'Participant' },
+           JoinedAt: { type: Date, default: Date.now }
+       }
+   ]
 });
+
+const participantSchema = new mongoose.Schema({
+    ActivityId: { type: mongoose.Schema.Types.ObjectId, ref: 'Activity', required: true },
+    FirstName: { type: String, required: true },
+    LastName: { type: String, required: true },
+    PhoneNumber: { type: String, required: true },
+    JoinedAt: { type: Date, default: Date.now }
+});
+
 const Activity = mongoose.model('Activity', activitySchema);
+const Participant = mongoose.model('Participant', participantSchema);
 
-// Test API endpoint
-app.get('/api/test', async (req, res) => {
-    try {
-        let testDoc = await TestModel.findOne();
-        if (!testDoc) {
-            testDoc = new TestModel({ message: 'MongoDB connection is successful!' });
-            await testDoc.save();
-        }
-        res.status(200).json(testDoc);
-    } catch (err) {
-        res.status(500).json({ message: 'Error testing database connection', error: err.message });
-    }
-});
 
-// Register Route
-app.post('/api/register', async (req, res) => {
-    const { firstName, lastName, phone } = req.body;
-    try {
-        const existingUser = await User.findOne({ phone });
-        if (existingUser) {
-            return res.status(400).json({ message: 'Phone number already in use' });
-        }
 
-        const newUser = new User({ firstName, lastName, phone });
-        await newUser.save();
-        res.status(201).json({ message: 'Registration successful' });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error' });
-    }
-});
-
-// List Activities Route
-app.get('/api/activities', async (req, res) => {
+// API 1: ดึงกิจกรรมทั้งหมด
+app.get('/activities', async (req, res) => {
     try {
         const activities = await Activity.find();
-        res.status(200).json(activities);
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching activities', error: err.message });
+        res.json(activities);
+    } catch (error) {
+        res.status(500).send('Server error');
     }
 });
-app.get('/api/activities/:id', async (req, res) => {
-    const { id } = req.params;
 
+// API 2: ดึงรายละเอียดกิจกรรมแต่ละรายการ
+app.get('/activities/:id', async (req, res) => {
     try {
-        const activity = await Activity.findById(id);
-        if (!activity) {
-            return res.status(404).json({ message: 'Activity not found' });
+        const activity = await Activity.findById(req.params.id);
+        if (!activity) return res.status(404).send('Activity not found');
+        res.json(activity);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+// API 3: ดูรายชื่อผู้เข้าร่วมกิจกรรม
+app.get('/activities/:id/participants', async (req, res) => {
+    try {
+        const activity = await Activity.findById(req.params.id).populate('Participants.ParticipantId', 'FirstName LastName PhoneNumber');
+        if (!activity) return res.status(404).send('Activity not found');
+
+        const participants = activity.Participants.map(participant => ({
+            FirstName: participant.ParticipantId.FirstName,
+            LastName: participant.ParticipantId.LastName,
+            PhoneNumber: participant.ParticipantId.PhoneNumber,
+            JoinedAt: participant.JoinedAt
+        }));
+
+        res.json(participants);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+// API 4: เช็คว่าผู้เข้าร่วมกิจกรรมได้ลงทะเบียนแล้วหรือยัง
+app.post('/activities/:id/check', async (req, res) => {
+    try {
+        const { FirstName, LastName, PhoneNumber } = req.body;
+        const activityId = req.params.id;
+
+        // ตรวจสอบว่าผู้ใช้คนนี้เข้าร่วมกิจกรรมนี้แล้วหรือยัง
+        const existingParticipant = await Participant.findOne({
+            ActivityId: activityId,
+            FirstName: FirstName,
+            LastName: LastName,
+            PhoneNumber: PhoneNumber
+        });
+
+        if (existingParticipant) {
+            return res.status(200).send('Participant already registered for this activity');
+        } else {
+            return res.status(404).send('Participant not found for this activity');
         }
-        res.status(200).json(activity);
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching activity', error: err.message });
+    } catch (error) {
+        res.status(500).send('Server error');
     }
 });
-app.put('/api/activities/:id', async (req, res) => {
-    const { id } = req.params;
-    const { ActivityName, ActivityDes, ActivityRegisted, ActivitySum } = req.body;
 
+// API 5: เพิ่มผู้เข้าร่วมกิจกรรม
+app.post('/activities/:id/join', async (req, res) => {
     try {
-        const updatedActivity = await Activity.findByIdAndUpdate(
-            id,
-            { ActivityName, ActivityDes , ActivitySum },
-            { new: true, runValidators: true }
-        );
+        const { FirstName, LastName, PhoneNumber } = req.body;
+        const activity = await Activity.findById(req.params.id);
+        if (!activity) return res.status(404).send('Activity not found');
 
-        if (!updatedActivity) {
-            return res.status(404).json({ message: 'Activity not found' });
-        }
+        const participant = new Participant({
+            ActivityId: req.params.id,
+            FirstName,
+            LastName,
+            PhoneNumber
+        });
 
-        res.status(200).json({ message: 'Activity updated successfully', activity: updatedActivity });
-    } catch (err) {
-        res.status(500).json({ message: 'Error updating activity', error: err.message });
+        await participant.save();
+
+        activity.TotalParticipants += 1;
+        activity.Participants.push({ ParticipantId: participant._id, JoinedAt: participant.JoinedAt });
+        await activity.save();
+
+        res.status(201).send('Participant added successfully');
+    } catch (error) {
+        res.status(500).send('Server error');
     }
 });
-app.post('/api/activities', async (req, res) => {
-    const { ActivityName, ActivityDes, ActivityRegisted, ActivitySum } = req.body;
 
-    if (!ActivityName || !ActivityDes || typeof ActivityRegisted !== 'number' || typeof ActivitySum !== 'number') {
-        return res.status(400).json({ message: 'Invalid input data' });
-    }
 
-    try {
-        const newActivity = new Activity({ ActivityName, ActivityDes, ActivityRegisted, ActivitySum });
-        await newActivity.save();
-        res.status(201).json({ message: 'Activity added successfully', activity: newActivity });
-    } catch (err) {
-        res.status(500).json({ message: 'Error adding activity', error: err.message });
-    }
-});
-// Handle default route (root URL)
+
+// เปิดหน้า index.html
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Handle default route (root URL)
-app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-});
-// Handle default route (root URL)
+
 app.get('/welcome-container', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'welcome_container.html'));
-});
-// Handle default route (root URL)
-app.get('/userinfo', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'userinfo.html'));
+    res.sendFile(path.join(__dirname, 'welcome_container.html'));
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// เริ่มเซิร์ฟเวอร์
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
