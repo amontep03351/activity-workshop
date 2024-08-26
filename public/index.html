@@ -81,32 +81,7 @@
 <script>
 
 $(document).ready(function(){
-  // Open Login Modal
-    $('#open-login-modal').click(function() {
-        $('#login-modal').fadeIn();
-    });
 
-    // Open Register Modal
-    $('#open-register-modal').click(function() {
-        $('#register-modal').fadeIn();
-    });
-
-    // Close Login Modal
-    $('#close-login-modal').click(function() {
-        $('#login-modal').fadeOut();
-    });
-
-    // Close Register Modal
-    $('#close-register-modal').click(function() {
-        $('#register-modal').fadeOut();
-    });
-
-    // Close Modal when clicking outside the modal content
-    $(window).click(function(event) {
-        if ($(event.target).hasClass('modal')) {
-            $('.modal').fadeOut();
-        }
-    });
     $.ajax({
          url: '/welcome-container',
          method: 'GET',
@@ -154,7 +129,7 @@ $(document).ready(function(){
             // แสดงรายละเอียดกิจกรรมใน div ที่กำหนด
 
             $('#activityId').val(activityId);
-                const detailsHtml = `
+            const detailsHtml = `
                  <h2>${data.ActivityName}</h2>
                  <p>${data.ActivityDescription}</p>
                  <p>ผู้เข้าร่วมทั้งหมด: ${data.TotalParticipants}</p>
@@ -279,7 +254,32 @@ $(document).ready(function(){
            }
        });
     });
+    // Open Login Modal
+      $('#open-login-modal').click(function() {
+          $('#login-modal').fadeIn();
+      });
 
+      // Open Register Modal
+      $('#open-register-modal').click(function() {
+          $('#register-modal').fadeIn();
+      });
+
+      // Close Login Modal
+      $('#close-login-modal').click(function() {
+          $('#login-modal').fadeOut();
+      });
+
+      // Close Register Modal
+      $('#close-register-modal').click(function() {
+          $('#register-modal').fadeOut();
+      });
+
+      // Close Modal when clicking outside the modal content
+      $(window).click(function(event) {
+          if ($(event.target).hasClass('modal')) {
+              $('.modal').fadeOut();
+          }
+      });
 
 });
 function function_short(order) {
